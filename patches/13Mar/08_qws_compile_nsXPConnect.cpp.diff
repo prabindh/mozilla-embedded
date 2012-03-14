@@ -1,0 +1,39 @@
+--- /home/prabindh/work1/mozilla-central_original/js/xpconnect/src/nsXPConnect.cpp	2012-03-12 23:17:22.000000000 +0530
++++ /home/prabindh/work1/mozilla-central/js/xpconnect/src/nsXPConnect.cpp	2012-03-15 00:49:28.190235116 +0530
+@@ -63,7 +63,9 @@
+ #include "WrapperFactory.h"
+ #include "AccessCheck.h"
+ 
++#ifdef MOZ_JSDEBUGGER
+ #include "jsdIDebuggerService.h"
++#endif
+ 
+ #include "XPCQuickStubs.h"
+ #include "dombindings.h"
+@@ -2443,8 +2445,10 @@ nsXPConnect::Peek(JSContext * *_retval)
+     return NS_OK;
+ }
+ 
++#ifdef MOZ_JSDEBUGGER
+ void
+-nsXPConnect::CheckForDebugMode(JSRuntime *rt) {
++nsXPConnect::CheckForDebugMode(JSRuntime *rt) 
++{
+     JSContext *cx = NULL;
+ 
+     if (gDebugMode == gDesiredDebugMode) {
+@@ -2511,6 +2515,14 @@ fail:
+         JS_SetRuntimeDebugMode(rt, false);
+     gDesiredDebugMode = gDebugMode = false;
+ }
++#else //MOZ_JSDEBUGGER not defined
++void
++nsXPConnect::CheckForDebugMode(JSRuntime *rt) 
++{
++    gDesiredDebugMode = gDebugMode = false;
++}
++#endif //#ifdef MOZ_JSDEBUGGER
++
+ 
+ NS_EXPORT_(void)
+ xpc_ActivateDebugMode()
