@@ -1,0 +1,81 @@
+#Prabu - tested on gcc4.3.3 to "fail" - refer README for more details
+
+export PKG_CONFIG=/home/prabindh/work1/ANGSTROM_EABI_2/usr/local/angstrom/arm/bin/pkg-config
+export PKG_CONFIG_PATH=/home/prabindh/work1/ANGSTROM_EABI_2/usr/local/angstrom/arm/arm-angstrom-linux-gnueabi/usr/lib/pkgconfig
+export CROSS_COMPILE=1
+export CC=arm-angstrom-linux-gnueabi-gcc
+export CXX=arm-angstrom-linux-gnueabi-g++
+export STRIP=arm-angstrom-linux-gnueabi-strip
+
+#Prabu - do not include freetype2 headers from rootfs, MOZ has its own freetype2 that is different from rootfs and causes issues
+export CPPFLAGS="-I/home/prabindh/work1/ANGSTROM_EABI_2/usr/local/angstrom/arm/usr/include -I/home/prabindh/Graphics_SDK_4_05_00_03/include/OGLES2 -I/home/prabindh/work1/mozilla-central/modules/freetype2/include"
+
+export HOST_CC=gcc
+export HOST_CFLAGS="-g `pkg-config --cflags glib-2.0` -L/usr/lib/i386-linux-gnu"
+export HOST_CXX=g++
+export HOST_CXXFLAGS=-g
+export CFLAGS=-g
+export CXXFLAGS=-g
+export FFLAGS="-g -O2"
+
+
+FIX_LINK_LDFLAGS="-L/home/prabindh/work1/ANGSTROM_EABI_2/usr/local/angstrom/arm/arm-angstrom-linux-gnueabi/usr/lib/ -Wl,-rpath-link=/usr/lib -L/home/prabindh/work1/ANGSTROM_EABI_2/usr/local/angstrom/arm/lib/arm-angstrom-linux-gnueabi -Wl,-rpath-link=/home/prabindh/work1/ANGSTROM_EABI_2/usr/local/angstrom/arm/lib/arm-angstrom-linux-gnueabi -L/home1/prabu/arm-qt/test_install-gstrmr/lib -Wl,-rpath-link=/home1/prabu/arm-qt/test_install-gstrmr/lib/"
+
+#Prabu added gfx libs, and sql, qtscript
+FIX_TARGET_LINK_LDFLAGS="-L/home/prabindh/work1/ANGSTROM_EABI_2/usr/local/angstrom/arm/arm-angstrom-linux-gnueabi/usr/lib/ -Wl,-rpath-link=/usr/lib -L/home/prabindh/work1/ANGSTROM_EABI_2/usr/local/angstrom/arm/lib/arm-angstrom-linux-gnueabi -Wl,-rpath-link=/home/prabindh/work1/ANGSTROM_EABI_2/usr/local/angstrom/arm/lib/arm-angstrom-linux-gnueabi -L/home1/prabu/arm-qt/test_install-gstrmr/lib -Wl,-rpath-link=/home1/prabu/arm-qt/test_install-gstrmr/lib/ -L/home/prabindh/Graphics_SDK_4_05_00_03/gfx_dbg_es5.x -lEGL -lGLESv2 -lGLES_CM -lIMGegl -lsrv_um -lusc -lQtSql -lQtScript -lbz2"
+
+export LDFLAGS="$FIX_LINK_LDFLAGS"
+
+LDFLAGS="$FIX_LINK_LDFLAGS"
+
+ac_add_options --target=arm-angstrom-linux-gnueabi
+ac_add_options --prefix=/home/prabindh/work1/ANGSTROM_EABI_2/usr/local/angstrom/arm/
+ac_add_options --enable-application=mobile
+ac_add_options --enable-update-channel=nightly
+ac_add_options --enable-update-packaging
+ac_add_options --enable-tests
+ac_add_options --enable-default-toolkit=cairo-qt
+ac_add_options --enable-mobile-optimize
+ac_add_options --disable-necko-wifi
+
+mk_add_options CPPFLAGS=-I/home/prabindh/work1/ANGSTROM_EABI_2/usr/local/angstrom/arm/usr/include
+mk_add_options LDFLAGS="$FIX_TARGET_LINK_LDFLAGS"
+
+ac_add_options --enable-cpp-rtti
+
+#Prabu commented out to rule out relocation errors with gcc4.3.3 in libxul
+#export MOZ_DEBUG_SYMBOLS=1
+#ac_add_options --enable-debug-symbols="-gdwarf-2"
+ac_add_options --enable-debug=no
+ac_add_options --enable-debug-symbols=no
+
+export MOZILLA_OFFICIAL=1
+mk_add_options PROFILE_GEN_SCRIPT=@TOPSRCDIR@/build/profile_pageloader.pl
+
+ac_add_options --enable-optimize
+#Prabu add for gcc4.3.3+laptop build - but no avail, so commenting
+#ac_add_options --enable-optimize=no
+
+mk_add_options MOZ_MAKE_FLAGS="-j4"
+mk_add_options MOZ_OBJDIR="@TOPSRCDIR@/obj-build-qt-qws"
+ac_add_options --with-arm-kuser
+ac_add_options --with-thumb=toolchain-default
+ac_add_options --with-float-abi=toolchain-default
+ac_add_options --with-system-zlib
+ac_add_options --enable-force-egl
+ac_add_options --disable-dbus
+ac_add_options --without-x
+
+ac_add_options --enable-tree-freetype
+
+ac_add_options --with-qtdir=/home/prabindh/work1/arm-qt/qt-everywhere-opensource-src-4.8.0
+
+#ac_add_options --enable-debug
+#ac_add_options --enable-logging
+ac_add_options --disable-jemalloc
+
+#Prabu added
+ac_add_options --with-arch=armv7-a
+#Prabu added for size linking issue - But no avail, so removing
+#ac_add_options --disable-optimization
+#ac_add_options --enable-jsd=no

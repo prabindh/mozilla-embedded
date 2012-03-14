@@ -1,0 +1,87 @@
+--- /home/prabindh/work1/mozilla-central_original/configure.in	2012-03-12 23:17:06.000000000 +0530
++++ /home/prabindh/work1/mozilla-central/configure.in	2012-03-14 12:53:26.238299946 +0530
+@@ -4910,7 +4910,8 @@ MOZ_ARG_HEADER(Toolkit Options)
+                             OS/2 - cairo-os2
+                             Win32 - cairo-windows
+                             * - cairo-gtk2
+-                            * - cairo-qt],
++                            * - cairo-qt
++                            * - cairo-qt-qws],
+     [ _DEFAULT_TOOLKIT=$enableval ],
+     [ _DEFAULT_TOOLKIT=$_PLATFORM_DEFAULT_TOOLKIT])
+ 
+@@ -4918,6 +4919,7 @@ MOZ_ARG_HEADER(Toolkit Options)
+         -o "$_DEFAULT_TOOLKIT" = "cairo-gtk2" \
+         -o "$_DEFAULT_TOOLKIT" = "cairo-gtk2-x11" \
+         -o "$_DEFAULT_TOOLKIT" = "cairo-qt" \
++        -o "$_DEFAULT_TOOLKIT" = "cairo-qt-qws" \
+         -o "$_DEFAULT_TOOLKIT" = "cairo-os2" \
+         -o "$_DEFAULT_TOOLKIT" = "cairo-cocoa" \
+         -o "$_DEFAULT_TOOLKIT" = "cairo-uikit" \
+@@ -4931,10 +4933,6 @@ MOZ_ARG_HEADER(Toolkit Options)
+         AC_MSG_ERROR([You must specify a default toolkit (perhaps $_PLATFORM_DEFAULT_TOOLKIT).])
+     fi
+ 
+-MOZ_ARG_WITHOUT_BOOL(x,
+-[  --without-x              Build without X11],
+-    WITHOUT_X11=1)
+-
+ dnl ========================================================
+ dnl = Enable the toolkit as needed                         =
+ dnl ========================================================
+@@ -4969,23 +4967,37 @@ cairo-gtk2|cairo-gtk2-x11)
+ cairo-qt)
+     MOZ_WIDGET_TOOLKIT=qt
+     MOZ_ENABLE_QT=1
+-    if test -z "$WITHOUT_X11"; then
+-      MOZ_ENABLE_XREMOTE=1
+-      MOZ_WEBGL_GLX=1
+-      MOZ_X11=1
+-      AC_DEFINE(MOZ_X11)
+-      XT_LIBS=
+-    fi
+-
++    MOZ_ENABLE_XREMOTE=1
+     MOZ_WEBGL=1
++    MOZ_WEBGL_GLX=1
+     USE_ELF_DYNSTR_GC=
++
++    AC_DEFINE(MOZ_X11)
++    MOZ_X11=1
+     USE_FC_FREETYPE=1
++    XT_LIBS=
++
+     TK_CFLAGS='$(MOZ_QT_CFLAGS)'
+     TK_LIBS='$(MOZ_QT_LIBS)'
+     AC_DEFINE(MOZ_WIDGET_QT)
+     MOZ_PDF_PRINTING=1
+     ;;
+ 
++cairo-qt-qws)
++    MOZ_WIDGET_TOOLKIT=qt
++    MOZ_ENABLE_QT=1
++    MOZ_WEBGL=1
++    USE_ELF_DYNSTR_GC=
++    XT_LIBS=
++    USE_FC_FREETYPE=1
++
++    TK_CFLAGS='$(MOZ_QT_CFLAGS)'
++    TK_LIBS='$(MOZ_QT_LIBS)'
++    AC_DEFINE(MOZ_WIDGET_QT)
++    MOZ_PDF_PRINTING=1
++    MOZ_ENABLE_QT_QWS=1
++    AC_DEFINE(MOZ_WIDGET_QT_QWS)
++    ;;
+ cairo-os2)
+     MOZ_WIDGET_TOOLKIT=os2
+     USE_FC_FREETYPE=1
+@@ -8848,9 +8860,6 @@ fi
+ dnl Check for missing components
+ if test "$COMPILE_ENVIRONMENT"; then
+ if test "$MOZ_X11"; then
+-    if test "$WITHOUT_X11"; then
+-        AC_MSG_ERROR([--without-x specified and MOZ_X11 still defined])
+-    fi
+     dnl ====================================================
+     dnl = Check if X headers exist
+     dnl ====================================================

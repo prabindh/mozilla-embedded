@@ -1,0 +1,16 @@
+--- /home/prabindh/work1/mozilla-central_original/gfx/gl/Makefile.in	2012-03-12 23:17:15.000000000 +0530
++++ /home/prabindh/work1/mozilla-central/gfx/gl/Makefile.in	2012-03-13 22:56:08.018183308 +0530
+@@ -98,8 +98,13 @@ endif
+ ifeq ($(MOZ_WIDGET_TOOLKIT),qt)
+ ifdef MOZ_PLATFORM_MAEMO
+ GL_PROVIDER = EGL
+-else
++else 
++ifdef MOZ_X11
+ GL_PROVIDER = GLX
++else
++GL_PROVIDER = EGL
++endif
+ endif
+ endif
+ 

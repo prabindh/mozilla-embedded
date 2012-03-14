@@ -1,0 +1,27 @@
+Note 1
+
+With 13Mar configuration and patchset, gcc4.3.3 slaps me with below error in libxul.so linking step.
+
+/home/prabindh/work1/mozilla-central/js/src/jstypedarray.cpp:1486: relocation truncated to fit: R_ARM_PLT32 against symbol `mozilla::DebugOnly<unsigned int>::~DebugOnly()' defined in .text._ZN7mozilla9DebugOnlyIjED1Ev[mozilla::DebugOnly<unsigned int>::~DebugOnly()] section in ../../netwerk/base/src/nsBufferedStreams.o
+
+
+I am suspecting the size of the libjs static library, 137 MB, and relocation is crossing boundaries (long call issue)
+
+-rw-r--r-- 1 prabindh prabindh 136717606 2012-03-14 08:39 ./js/src/libjs_static.a
+
+Also discussed in
+
+http://code.google.com/p/chromium-os/issues/detail?id=12800
+
+https://bugzilla.mozilla.org/show_bug.cgi?id=732340
+
+But none of these suggestions (-O2, -Os, --enable-debug=no, --enable-optimisation=no) help. To try gcc4.5 next. Not really suspecting RAM limitations on build machine - 2GB RAM should be sufficient for these builds
+
+
+Note 2:
+
+There may be further errors after libxul builds successfully. Unverified due to above error.
+
+
+-prabu@ti.com
+

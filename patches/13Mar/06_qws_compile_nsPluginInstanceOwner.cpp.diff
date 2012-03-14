@@ -1,0 +1,11 @@
+--- /home/prabindh/work1/mozilla-central_original/dom/plugins/base/nsPluginInstanceOwner.cpp	2012-03-12 23:17:10.000000000 +0530
++++ /home/prabindh/work1/mozilla-central/dom/plugins/base/nsPluginInstanceOwner.cpp	2012-03-13 21:00:44.026183766 +0530
+@@ -748,7 +748,8 @@ NS_IMETHODIMP nsPluginInstanceOwner::Get
+   }
+ 
+   return rv;
+-#elif defined(MOZ_WIDGET_GTK2) || defined(MOZ_WIDGET_QT)
++#elif defined(MOZ_WIDGET_GTK2) || (defined(MOZ_WIDGET_QT) && defined(MOZ_X11))
+   // X11 window managers want the toplevel window for WM_TRANSIENT_FOR.
+   nsIWidget* win = mObjectFrame->GetNearestWidget();
+   if (!win)

@@ -1,0 +1,29 @@
+--- /home/prabindh/work1/mozilla-central_original/gfx/gl/GLContextProviderEGL.cpp	2012-03-12 23:17:15.000000000 +0530
++++ /home/prabindh/work1/mozilla-central/gfx/gl/GLContextProviderEGL.cpp	2012-03-13 20:53:21.474183898 +0530
+@@ -191,7 +191,12 @@ typedef void *EGLImageKHR;
+ typedef void *GLeglImageOES;
+ 
+ #ifdef MOZ_WIDGET_QT
+-#define EGL_DEFAULT_DISPLAY  ((EGLNativeDisplayType)QX11Info::display())
++  #ifdef MOZ_X11
++    #define EGL_DEFAULT_DISPLAY  ((EGLNativeDisplayType)QX11Info::display())
++  #else
++    #define EGL_DEFAULT_DISPLAY  ((EGLNativeDisplayType)0)
+ #else
+ #define EGL_DEFAULT_DISPLAY  ((EGLNativeDisplayType)0)
+ #endif
+@@ -972,6 +977,7 @@ private:
+     bool mHave_EGL_ANGLE_surface_d3d_texture_2d_share_handle;
+ } sEGLLibrary;
+ 
++
+ class GLContextEGL : public GLContext
+ {
+     friend class TextureImageEGL;
+@@ -2087,6 +2093,8 @@ GLContextEGL::CreateTextureImage(const n
+ {
+     nsRefPtr<TextureImage> t = new gl::TiledTextureImage(this, aSize, aContentType, aUseNearestFilter);
+     return t.forget();
+-};
++}
+

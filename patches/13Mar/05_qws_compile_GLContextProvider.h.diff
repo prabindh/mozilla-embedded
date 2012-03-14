@@ -1,0 +1,19 @@
+--- /home/prabindh/work1/mozilla-central_original/gfx/gl/GLContextProvider.h	2012-03-12 23:17:15.000000000 +0530
++++ /home/prabindh/work1/mozilla-central/gfx/gl/GLContextProvider.h	2012-03-13 20:49:40.982192406 +0530
+@@ -84,6 +84,17 @@ namespace gl {
+ #endif
+ #endif
+ 
++#if defined(MOZ_PLATFORM_QT_QWS) 
++#define GL_CONTEXT_PROVIDER_NAME GLContextProviderEGL
++#include "GLContextProviderImpl.h"
++#undef GL_CONTEXT_PROVIDER_NAME
++
++#ifndef GL_CONTEXT_PROVIDER_DEFAULT
++#define GL_CONTEXT_PROVIDER_DEFAULT GLContextProviderEGL
++#endif
++#endif 
++
+ // X11, with XRender optimizations and no GL layer support
+ #if defined(MOZ_X11) && defined(MOZ_EGL_XRENDER_COMPOSITE) && !defined(GL_CONTEXT_PROVIDER_DEFAULT)
+ #define GL_CONTEXT_PROVIDER_NAME GLContextProviderEGL
