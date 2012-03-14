@@ -1,0 +1,30 @@
+--- /home/prabindh/work1/mozilla-central_original/js/xpconnect/src/nsXPConnect.cpp	2012-03-12 23:17:22.000000000 +0530
++++ /home/prabindh/work1/mozilla-central/js/xpconnect/src/nsXPConnect.cpp	2012-03-14 10:05:49.739183757 +0530
+@@ -63,7 +63,10 @@
+ #include "WrapperFactory.h"
+ #include "AccessCheck.h"
+ 
++
++#ifdef MOZ_JSDEBUGGER 
+ #include "jsdIDebuggerService.h"
++#endif
+ 
+ #include "XPCQuickStubs.h"
+ #include "dombindings.h"
+@@ -2459,6 +2462,7 @@ nsXPConnect::CheckForDebugMode(JSRuntime
+ 
+     JS_SetRuntimeDebugMode(rt, gDesiredDebugMode);
+ 
++#ifdef MOZ_JSDEBUGGER
+     nsresult rv;
+     const char jsdServiceCtrID[] = "@mozilla.org/js/jsd/debugger-service;1";
+     nsCOMPtr<jsdIDebuggerService> jsds = do_GetService(jsdServiceCtrID, &rv);
+@@ -2502,6 +2506,8 @@ fail:
+     if (jsds)
+         jsds->DeactivateDebugger();
+ 
++#endif 
++
+     /*
+      * If an attempt to turn debug mode on fails, cancel the request. It's
+      * always safe to turn debug mode off, since DeactivateDebugger prevents
