@@ -28,7 +28,6 @@
 +    LDFLAGS=$_SAVE_LDFLAGS
 +    CFLAGS=$_SAVE_CFLAGS
 +fi
-+exit 1
 +
  dnl ========================================================
  dnl = GnomeVFS, GIO and GConf support module
