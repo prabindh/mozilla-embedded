@@ -1,0 +1,35 @@
+--- /home/prabindh/work1/x86-mozilla/mozilla-central/configure.in	2012-03-26 23:25:18.268072387 +0530
++++ /home/prabindh/work1/x86-mozilla/mozilla-central/configure.in.sgx	2012-03-26 23:25:40.828072349 +0530
+@@ -5227,6 +5227,32 @@ then
+     AC_SUBST(MOZ_PANGO)
+ fi
+ 
++dnl ===== Prabu added SGX ======
++SGX_VERSION=1.6.16.4117
++PKG_CHECK_MODULES(SGXCONFIGURO, sgx-null-gles2 >= $SGX_VERSION)
++AC_SUBST(SGXCONFIGURO_CFLAGS)
++AC_SUBST(SGXCONFIGURO_LIBS)
++
++
++_SAVE_LDFLAGS=$LDFLAGS
++LDFLAGS="$SGXCONFIGURO_LIBS $LDFLAGS"
++_SAVE_CFLAGS=$CFLAGS
++CFLAGS="$SGXCONFIGURO_CFLAGS $CFLAGS"
++AC_MSG_CHECKING([Checking for SGX GLES2 compile and link])
++AC_TRY_LINK([#include <GLES2/gl2.h>],
++    { \
++        /* Taken from sgxperf */ \
++        GLuint uiFragShader = glCreateShader(GL_FRAGMENT_SHADER); \
++        return 0; \
++    } \
++    , [ ogles2=yes ], [ ogles2=no ])
++if test "$ogles2" != "yes"; then
++    AC_MSG_ERROR([GLES2 program could not be built. Error!])
++    LDFLAGS=$_SAVE_LDFLAGS
++    CFLAGS=$_SAVE_CFLAGS
++fi
++exit 1
++
+ dnl ========================================================
+ dnl = GnomeVFS, GIO and GConf support module
+ dnl ========================================================
