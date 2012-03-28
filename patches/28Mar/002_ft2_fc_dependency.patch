@@ -1,0 +1,25 @@
+--- configure.in.orig	2012-03-28 18:24:42.727791744 +0530
++++ configure.in	2012-03-28 18:24:22.868791681 +0530
+@@ -5046,6 +5046,14 @@ incorrect])
+     if test "$MOZ_ENABLE_QTMOBILITY"; then
+        AC_DEFINE(MOZ_ENABLE_QTMOBILITY)
+     fi
++
++    PKG_CHECK_MODULES(MOZ_FONTCONFIG, [fontconfig freetype2],
++    [
++        CAIRO_FT_CFLAGS="$CAIRO_FT_CFLAGS $MOZ_FONTCONFIG_CFLAGS"
++    ],
++    [
++        exit 1
++    ])
+ fi
+ 
+ if test "$MOZ_ENABLE_HONK"
+@@ -6333,6 +6341,7 @@ if test -n "$MOZ_TREE_FREETYPE"; then
+    MOZ_ENABLE_CAIRO_FT=1
+    FT_FONT_FEATURE="#define CAIRO_HAS_FT_FONT 1"
+    FT2_CFLAGS='-I$(topsrcdir)/modules/freetype2/include'
++   CAIRO_FT_CFLAGS="$CAIRO_FT_CFLAGS $FT2_CFLAGS -I$(topsrcdir)/modules/freetype2/include"
+    FT2_LIBS='$(call EXPAND_LIBNAME_PATH,freetype,$(DEPTH)/modules/freetype2/.libs)'
+    CAIRO_FT_LIBS='$(call EXPAND_LIBNAME_PATH,freetype,$(DEPTH)/modules/freetype2/.libs)'
+    AC_DEFINE(HAVE_FT_BITMAP_SIZE_Y_PPEM)

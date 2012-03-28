@@ -1,0 +1,11 @@
+--- configure.in.orig	2012-03-28 18:27:02.591792077 +0530
++++ configure.in	2012-03-28 18:24:22.868791681 +0530
+@@ -5898,7 +5898,7 @@ dnl If using sydneyaudio with Linux, ens
+ if test -n "$MOZ_SYDNEYAUDIO"; then
+    case "$target_os" in
+ linux*)
+-      PKG_CHECK_MODULES(MOZ_ALSA, alsa, ,
++      PKG_CHECK_MODULES(MOZ_ALSA, alsa, [CFLAGS="$MOZ_ALSA_CFLAGS $CFLAGS"],
+          [echo "$MOZ_ALSA_PKG_ERRORS"
+           AC_MSG_ERROR([Need alsa for Ogg, Wave or WebM decoding on Linux.  Disable with --disable-ogg --disable-wave --disable-webm.  (On Ubuntu, you might try installing the package libasound2-dev.)])])
+       ;;

@@ -1,0 +1,65 @@
+export UBUNTU_CORE_ROOTFS=/home/prabindh/work1/ubuntu-core/media/rootfs
+
+#script in same folder
+export PKG_CONFIG=/home/prabindh/work1/x86-mozilla/mozilla-central/x86-cross-ubuntu-pkg-config
+
+export CROSS_COMPILE=1
+export CC=arm-linux-gnueabi-gcc
+export CXX=arm-linux-gnueabi-g++
+export STRIP=arm-linux-gnueabi-strip
+
+export HOST_CC=gcc
+#Because of pkgconfig foo above, host pkg-config will be bad
+#export HOST_CFLAGS="-g `pkg-config --cflags glib-2.0` -L/usr/lib/i386-linux-gnu"
+export HOST_CFLAGS="-g -I/include -I/usr/include/glib-2.0 -L/usr/lib/i386-linux-gnu"
+export HOST_CXX=g++
+export HOST_CXXFLAGS=-g
+export CFLAGS=-g
+export CXXFLAGS=-g
+export FFLAGS="-g -O2"
+
+# Make the plugin container applications happy (ex, ipc/app etc)
+FIX_LINK_LDFLAGS="-L$UBUNTU_CORE_ROOTFS/home1/prabu/arm-qt/test_install-gstrmr/lib/ -Wl,-rpath-link=$UBUNTU_CORE_ROOTFS/home1/prabu/arm-qt/test_install-gstrmr/lib/ -L$UBUNTU_CORE_ROOTFS/usr/lib/arm-linux-gnueabi -Wl,-rpath-link=$UBUNTU_CORE_ROOTFS/usr/lib/arm-linux-gnueabi/ -L$UBUNTU_CORE_ROOTFS/lib/arm-linux-gnueabi -Wl,-rpath-link=$UBUNTU_CORE_ROOTFS/lib/arm-linux-gnueabi/ -L$UBUNTU_CORE_ROOTFS/usr/lib -Wl,-rpath-link=$UBUNTU_CORE_ROOTFS/usr/lib -L$UBUNTU_CORE_ROOTFS/lib -Wl,-rpath-link=$UBUNTU_CORE_ROOTFS/lib"
+export LDFLAGS="$FIX_LINK_LDFLAGS"
+LDFLAGS="$FIX_LINK_LDFLAGS"
+mk_add_options LDFLAGS="$FIX_LINK_LDFLAGS"
+
+ac_add_options --target=arm-linux-gnueabi
+
+ac_add_options --prefix=/home1/prabu/cross-mozilla/
+ac_add_options --enable-application=mobile
+ac_add_options --enable-update-channel=nightly
+ac_add_options --enable-update-packaging
+ac_add_options --disable-tests
+ac_add_options --enable-default-toolkit=cairo-qt
+ac_add_options --enable-mobile-optimize
+ac_add_options --disable-necko-wifi
+
+ac_add_options --enable-cpp-rtti
+
+export MOZ_DEBUG_SYMBOLS=1
+ac_add_options --enable-debug-symbols="-gdwarf-2"
+export MOZILLA_OFFICIAL=1
+mk_add_options PROFILE_GEN_SCRIPT=@TOPSRCDIR@/build/profile_pageloader.pl
+
+ac_add_options --enable-optimize
+mk_add_options MOZ_MAKE_FLAGS="-j4"
+mk_add_options MOZ_OBJDIR="@TOPSRCDIR@/obj-build-prabindh-qt-qws"
+ac_add_options --with-arm-kuser
+ac_add_options --with-thumb=toolchain-default
+ac_add_options --with-arch=armv7-a
+ac_add_options --with-float-abi=toolchain-default
+ac_add_options --with-system-zlib
+ac_add_options --with-gl-provider=EGL
+ac_add_options --disable-dbus
+ac_add_options --without-x
+ac_add_options --enable-tree-freetype
+
+ac_add_options --with-qtdir=$UBUNTU_CORE_ROOTFS/home1/prabu/arm-qt/test_install-gstrmr
+
+#ac_add_options --enable-debug
+#ac_add_options --enable-logging
+
+#This trips libxul otherwise
+ac_add_options --with-system-bz2
+
