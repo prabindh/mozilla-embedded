@@ -1,0 +1,8 @@
+--- media/libsydneyaudio/src/Makefile.in.orig	2012-04-02 18:26:40.598812399 +0530
++++ media/libsydneyaudio/src/Makefile.in	2012-04-02 18:26:45.917812588 +0530
+@@ -107,3 +107,5 @@ endif
+ include $(topsrcdir)/config/rules.mk
+ 
+ LOCAL_INCLUDES += -I$(srcdir)/../include
++
++CFLAGS += $(MOZ_ALSA_CFLAGS)
