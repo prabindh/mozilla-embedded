@@ -1,0 +1,9 @@
+--- media/libsydneyaudio/Makefile.in.orig	2012-04-02 15:41:36.057812318 +0530
++++ media/libsydneyaudio/Makefile.in	2012-04-02 15:44:08.906812368 +0530
+@@ -48,4 +48,6 @@ DIRS		= \
+ 		src \
+ 		$(NULL)
+ 
++CXXFLAGS += $(MOZ_ALSA_CFLAGS)
++
+ include $(topsrcdir)/config/rules.mk
