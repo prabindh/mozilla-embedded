@@ -1,0 +1,131 @@
+diff -r 0f84314db390 config/autoconf.mk.in
+--- a/config/autoconf.mk.in	Mon Apr 02 09:10:01 2012 +0530
++++ b/config/autoconf.mk.in	Tue Apr 03 18:48:13 2012 +0530
+@@ -587,6 +587,7 @@
+ MOZ_ENABLE_LIBNOTIFY	= @MOZ_ENABLE_LIBNOTIFY@
+ 
+ MOZ_ALSA_LIBS           = @MOZ_ALSA_LIBS@
++MOZ_ALSA_CFLAGS           = @MOZ_ALSA_CFLAGS@
+ 
+ GLIB_CFLAGS	= @GLIB_CFLAGS@
+ GLIB_LIBS	= @GLIB_LIBS@
+diff -r 0f84314db390 configure.in
+--- a/configure.in	Mon Apr 02 09:10:01 2012 +0530
++++ b/configure.in	Tue Apr 03 18:48:13 2012 +0530
+@@ -5105,6 +5105,16 @@
+     if test "$MOZ_ENABLE_QTMOBILITY"; then
+        AC_DEFINE(MOZ_ENABLE_QTMOBILITY)
+     fi
++
++    PKG_CHECK_MODULES(MOZ_FONTCONFIG, [fontconfig freetype2],
++    [
++        CAIRO_FT_CFLAGS="$CAIRO_FT_CFLAGS $MOZ_FONTCONFIG_CFLAGS"
++    ],
++    [
++        exit 1
++    ])
++
++
+ fi
+ 
+ if test "$MOZ_ENABLE_HONK"
+@@ -5127,6 +5137,16 @@
+     [
+         echo "udev library not found"
+     ])
++
++    PKG_CHECK_MODULES(MOZ_FONTCONFIG, [fontconfig freetype2],
++    [
++        CAIRO_FT_CFLAGS="$CAIRO_FT_CFLAGS $MOZ_FONTCONFIG_CFLAGS"
++    ],
++    [
++        exit 1
++    ])
++
++
+ fi
+ 
+ AC_SUBST(GTK_CONFIG)
+@@ -6401,7 +6421,7 @@
+    MOZ_ENABLE_CAIRO_FT=1
+    FT_FONT_FEATURE="#define CAIRO_HAS_FT_FONT 1"
+    FT2_CFLAGS='-I$(topsrcdir)/modules/freetype2/include'
+-   CAIRO_FT_CFLAGS='-I$(topsrcdir)/modules/freetype2/include'
++   CAIRO_FT_CFLAGS="$CAIRO_FT_CFLAGS $FT2_CFLAGS -I$(topsrcdir)/modules/freetype2/include"
+    FT2_LIBS='$(call EXPAND_LIBNAME_PATH,freetype,$(DEPTH)/modules/freetype2/.libs)'
+    CAIRO_FT_LIBS='$(call EXPAND_LIBNAME_PATH,freetype,$(DEPTH)/modules/freetype2/.libs)'
+    AC_DEFINE(HAVE_FT_BITMAP_SIZE_Y_PPEM)
+@@ -8145,6 +8165,32 @@
+ MOZ_TREE_PIXMAN=,
+ MOZ_TREE_PIXMAN=1 )
+ 
++
++dnl ===== Prabu added SGX ======
++SGX_VERSION=1.6.16.4117
++PKG_CHECK_MODULES(SGXCONFIGURO, sgx-null-gles2 >= $SGX_VERSION)
++AC_SUBST(SGXCONFIGURO_CFLAGS)
++AC_SUBST(SGXCONFIGURO_LIBS)
++
++MOZ_QT_LIBS="$SGXCONFIGURO_LIBS $MOZ_QT_LIBS"
++MOZ_QT_CFLAGS="$SGXCONFIGURO_CFLAGS $MOZ_QT_CFLAGS"
++CFLAGS="$SGXCONFIGURO_CFLAGS $CFLAGS"
++LDFLAGS="$SGXCONFIGURO_LIBS $LDFLAGS"
++MOZ_CAIRO_CFLAGS="$SGXCONFIGURO_CFLAGS $MOZ_CAIRO_CFLAGS"
++AC_MSG_CHECKING([Checking for SGX GLES2 compile and link])
++AC_TRY_LINK([#include <GLES2/gl2.h>],
++    { \
++        /* Taken from sgxperf */ \
++        GLuint uiFragShader = glCreateShader(GL_FRAGMENT_SHADER); \
++        return 0; \
++    } \
++    , [ ogles2=yes ], [ ogles2=no ])
++if test "$ogles2" != "yes"; then
++    AC_MSG_ERROR([GLES2 program could not be built. Error!])
++fi
++
++
++
+ # Check for headers defining standard int types.
+ MOZ_CHECK_HEADERS(stdint.h inttypes.h sys/int_types.h)
+ 
+@@ -8793,6 +8839,7 @@
+ AC_SUBST(MOZ_VP8_ENCODER)
+ AC_SUBST(MOZ_OGG)
+ AC_SUBST(MOZ_ALSA_LIBS)
++AC_SUBST(MOZ_ALSA_CFLAGS)
+ AC_SUBST(VPX_AS)
+ AC_SUBST(VPX_ASFLAGS)
+ AC_SUBST(VPX_DASH_C_FLAG)
+diff -r 0f84314db390 media/libsydneyaudio/src/Makefile.in
+--- a/media/libsydneyaudio/src/Makefile.in	Mon Apr 02 09:10:01 2012 +0530
++++ b/media/libsydneyaudio/src/Makefile.in	Tue Apr 03 18:48:13 2012 +0530
+@@ -107,3 +107,5 @@
+ include $(topsrcdir)/config/rules.mk
+ 
+ LOCAL_INCLUDES += -I$(srcdir)/../include
++
++CFLAGS += $(MOZ_ALSA_CFLAGS)
+diff -r 0f84314db390 toolkit/library/Makefile.in
+--- a/toolkit/library/Makefile.in	Mon Apr 02 09:10:01 2012 +0530
++++ b/toolkit/library/Makefile.in	Tue Apr 03 18:48:13 2012 +0530
+@@ -502,13 +502,13 @@
+ endif
+ 
+ ifeq (qt,$(MOZ_WIDGET_TOOLKIT))
+-EXTRA_DSO_LDOPTS += $(XLDFLAGS) $(XLIBS) $(XT_LIBS) $(MOZ_QT_LIBS) -lgthread-2.0
++EXTRA_DSO_LDOPTS += $(XLDFLAGS) $(XLIBS) $(XT_LIBS) $(MOZ_QT_LIBS) -lgthread-2.0 -lbz2
+ EXTRA_DSO_LDOPTS += $(FT2_LIBS) $(MOZ_PANGO_LIBS)
+ EXTRA_DSO_LDOPTS += $(LIBXUL_DIST)/../widget/qt/faststartupqt/$(LIB_PREFIX)faststartupqt.$(LIB_SUFFIX)
+ endif
+ 
+ ifeq (honk,$(MOZ_WIDGET_TOOLKIT))
+-EXTRA_DSO_LDOPTS += $(TK_LIBS)
++EXTRA_DSO_LDOPTS += $(TK_LIBS) -lbz2 -lz
+ ifdef MOZ_X11
+ EXTRA_DSO_LDOPTS += $(XLDFLAGS) $(XLIBS) $(XEXT_LIBS) $(XCOMPOSITE_LIBS) $(XT_LIBS)
+ endif
+@@ -611,3 +611,4 @@
+ # Wrap linker to measure peak virtual memory usage.
+ LD := $(PYTHON) $(topsrcdir)/build/link.py $(CURDIR)/linker-vsize $(LD)
+ endif
++

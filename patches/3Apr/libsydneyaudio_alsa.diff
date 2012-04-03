@@ -1,0 +1,62 @@
+# HG changeset patch
+# Parent 4c43cfe73516
+# User Prabindh Sundareson <prabu@ti.com>
+
+Bug 741289 - Sydneyaudio does not include MOZ_ALSA_CFLAGS. r=:glandium :romaxa
+
+diff -r 0f84314db390 config/autoconf.mk.in
+--- a/config/autoconf.mk.in	Mon Apr 02 09:10:01 2012 +0530
++++ b/config/autoconf.mk.in	Tue Apr 03 15:11:29 2012 +0530
+@@ -582,16 +582,17 @@ MOZ_LIBPROXY_CFLAGS     = @MOZ_LIBPROXY_
+ MOZ_LIBPROXY_LIBS       = @MOZ_LIBPROXY_LIBS@
+ MOZ_ENABLE_LIBPROXY     = @MOZ_ENABLE_LIBPROXY@
+ 
+ MOZ_LIBNOTIFY_CFLAGS	= @MOZ_LIBNOTIFY_CFLAGS@
+ MOZ_LIBNOTIFY_LIBS	= @MOZ_LIBNOTIFY_LIBS@
+ MOZ_ENABLE_LIBNOTIFY	= @MOZ_ENABLE_LIBNOTIFY@
+ 
+ MOZ_ALSA_LIBS           = @MOZ_ALSA_LIBS@
++MOZ_ALSA_CFLAGS         = @MOZ_ALSA_CFLAGS@
+ 
+ GLIB_CFLAGS	= @GLIB_CFLAGS@
+ GLIB_LIBS	= @GLIB_LIBS@
+ GLIB_GMODULE_LIBS	= @GLIB_GMODULE_LIBS@
+ 
+ MOZ_NATIVE_MAKEDEPEND	= @SYSTEM_MAKEDEPEND@
+ 
+ export CL_INCLUDES_PREFIX = @CL_INCLUDES_PREFIX@
+diff -r 0f84314db390 configure.in
+--- a/configure.in	Mon Apr 02 09:10:01 2012 +0530
++++ b/configure.in	Tue Apr 03 15:11:29 2012 +0530
+@@ -8788,16 +8834,17 @@ AC_SUBST(MOZ_CUBEB)
+ AC_SUBST(MOZ_WAVE)
+ AC_SUBST(MOZ_VORBIS)
+ AC_SUBST(MOZ_TREMOR)
+ AC_SUBST(MOZ_WEBM)
+ AC_SUBST(MOZ_VP8_ERROR_CONCEALMENT)
+ AC_SUBST(MOZ_VP8_ENCODER)
+ AC_SUBST(MOZ_OGG)
+ AC_SUBST(MOZ_ALSA_LIBS)
++AC_SUBST(MOZ_ALSA_CFLAGS)
+ AC_SUBST(VPX_AS)
+ AC_SUBST(VPX_ASFLAGS)
+ AC_SUBST(VPX_DASH_C_FLAG)
+ AC_SUBST(VPX_AS_CONVERSION)
+ AC_SUBST(VPX_ASM_SUFFIX)
+ AC_SUBST(VPX_X86_ASM)
+ AC_SUBST(VPX_ARM_ASM)
+ AC_SUBST(VPX_NEED_OBJ_INT_EXTRACT)
+diff -r 0f84314db390 media/libsydneyaudio/src/Makefile.in
+--- a/media/libsydneyaudio/src/Makefile.in	Mon Apr 02 09:10:01 2012 +0530
++++ b/media/libsydneyaudio/src/Makefile.in	Tue Apr 03 15:11:29 2012 +0530
+@@ -102,8 +102,10 @@ endif
+ 
+ ifeq ($(OS_ARCH),WINNT)
+ OS_LIBS += winmm.lib
+ endif
+ 
+ include $(topsrcdir)/config/rules.mk
+ 
+ LOCAL_INCLUDES += -I$(srcdir)/../include
++
++CFLAGS += $(MOZ_ALSA_CFLAGS)
