@@ -1,0 +1,41 @@
+diff -r 44301e274892 configure.in
+--- a/configure.in	Thu Dec 20 08:21:34 2012 +0530
++++ b/configure.in	Thu Dec 27 11:57:31 2012 +0530
+@@ -5236,16 +5236,27 @@ MOZ_ARG_DISABLE_BOOL(accessibility,
+ [  --disable-accessibility Disable accessibility support],
+     ACCESSIBILITY=,
+     ACCESSIBILITY=1 )
+ if test "$ACCESSIBILITY"; then
+     AC_DEFINE(ACCESSIBILITY)
+ fi
+ 
+ dnl ========================================================
++dnl Atleast linuxgl widget does not work with 
++dnl   --disable-accessibility as AccessFu.jsm is not 
++dnl packaged in
++dnl ========================================================
++if test "${MOZ_WIDGET_TOOLKIT}" = "linuxgl"; then
++  if test "$ACCESSIBILITY" != "1"; then
++        AC_MSG_ERROR([Accessibility is disabled, but needed for AccessFu to work])
++  fi
++fi
++
++dnl ========================================================
+ dnl Disable printing
+ dnl ========================================================
+ MOZ_ARG_DISABLE_BOOL(printing,
+ [  --disable-printing      Disable printing support],
+     NS_PRINTING=,
+     NS_PRINTING=1)
+ 
+ if test "$NS_PRINTING"; then
+@@ -9177,8 +9188,9 @@ export MOZ_ZLIB_LIBS
+ export MOZ_APP_NAME
+ export STLPORT_CPPFLAGS
+ export STLPORT_LDFLAGS
+ export STLPORT_LIBS
+ AC_OUTPUT_SUBDIRS(js/src)
+ ac_configure_args="$_SUBDIR_CONFIG_ARGS"
+ 
+ fi # COMPILE_ENVIRONMENT && !LIBXUL_SDK_DIR
++

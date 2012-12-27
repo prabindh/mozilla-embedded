@@ -1,0 +1,31 @@
+diff -r 44301e274892 widget/linuxgl/nsWindow.cpp
+--- a/widget/linuxgl/nsWindow.cpp	Thu Dec 20 08:21:34 2012 +0530
++++ b/widget/linuxgl/nsWindow.cpp	Thu Dec 27 12:03:52 2012 +0530
+@@ -541,17 +561,26 @@ nsWindow::Resize(int32_t aWidth,
+ 
+ NS_IMETHODIMP
+ nsWindow::Resize(int32_t aX,
+                  int32_t aY,
+                  int32_t aWidth,
+                  int32_t aHeight,
+                  bool    aRepaint)
+ {
++#ifndef MOZ_X11
++   //PRABU TTC - In LinuxGL (EGL nonX11) widget, always need to be fullscreen only
++   aWidth = sVirtualBounds.width;
++   aHeight = sVirtualBounds.height;
++#endif
+     mBounds = nsIntRect(aX, aY, aWidth, aHeight);
++
++    LOG("TTC: wxh = %d %d", aWidth, aHeight);
++
++
+     if (mWidgetListener)
+         mWidgetListener->WindowResized(this, aWidth, aHeight);
+ 
+     if (aRepaint && gWindowToRedraw)
+         gWindowToRedraw->Invalidate(sVirtualBounds);
+ 
+     return NS_OK;
+ }
+
