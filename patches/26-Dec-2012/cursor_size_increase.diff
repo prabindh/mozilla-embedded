@@ -1,0 +1,22 @@
+diff -r 70640577e7d3 gfx/layers/opengl/LayerManagerOGL.cpp
+--- a/gfx/layers/opengl/LayerManagerOGL.cpp	Fri Dec 28 20:23:35 2012 +0530
++++ b/gfx/layers/opengl/LayerManagerOGL.cpp	Sat Dec 29 20:36:47 2012 +0530
+@@ -981,17 +981,17 @@ LayerManagerOGL::Render()
+ 
+   if (mTarget) {
+     CopyToTarget(mTarget);
+     mGLContext->fBindBuffer(LOCAL_GL_ARRAY_BUFFER, 0);
+     return;
+   }
+ 
+   if (mPointerX >= 0 && mPointerY >= 0) {
+-    mGLContext->fScissor(mPointerX, mPointerY, 3, 3);
++    mGLContext->fScissor(mPointerX, mPointerY, 16, 16); 
+     mGLContext->fClearColor(1, 0, 0, 1);
+     mGLContext->fClear(LOCAL_GL_COLOR_BUFFER_BIT);
+   }
+ 
+   if (sDrawFPS && !mFPS) {
+     mFPS = new FPSState();
+   } else if (!sDrawFPS && mFPS) {
+     mFPS = nullptr;
