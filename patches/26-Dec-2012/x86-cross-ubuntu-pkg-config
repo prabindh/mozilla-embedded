@@ -1,0 +1,13 @@
+#!/bin/sh
+
+#Host pkg-config script to run on x86, targeting armv7a
+# Tested on Ubuntu 12.04, pkgconfig 0.26
+
+export UBUNTU_CORE_ROOTFS=/home/prabindh/work1/ubuntu-rootfs-dec/media/rootfs
+#unset this first then set libdir correctly
+export PKG_CONFIG_DIR=
+export PKG_CONFIG_LIBDIR=${UBUNTU_CORE_ROOTFS}/usr/lib/arm-linux-gnueabi/pkgconfig:${UBUNTU_CORE_ROOTFS}/usr/share/pkgconfig
+export PKG_CONFIG_SYSROOT_DIR=${UBUNTU_CORE_ROOTFS}
+#pkg-config --define-variable=prefix=/home/prabindh/work1/ubuntu-rootfs-dec/media/rootfs/usr "$@"
+pkg-config "$@"
+
