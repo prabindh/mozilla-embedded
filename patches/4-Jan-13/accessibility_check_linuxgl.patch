@@ -1,0 +1,27 @@
+diff -r f08a7a891a66 configure.in
+--- a/configure.in	Mon Dec 17 11:21:58 2012 +0530
++++ b/configure.in	Fri Jan 04 15:39:59 2013 +0530
+@@ -5236,16 +5236,23 @@ MOZ_ARG_DISABLE_BOOL(accessibility,
+ [  --disable-accessibility Disable accessibility support],
+     ACCESSIBILITY=,
+     ACCESSIBILITY=1 )
+ if test "$ACCESSIBILITY"; then
+     AC_DEFINE(ACCESSIBILITY)
+ fi
+ 
+ dnl ========================================================
++dnl Accessibility is required for the linuxgl widget
++dnl backend
++dnl ========================================================
++if test "${MOZ_WIDGET_TOOLKIT}" = "linuxgl" -a "$ACCESSIBILITY" != "1"; then
++    AC_MSG_ERROR(["Accessibility is required for the linuxgl widget backend"])
++fi
++dnl ========================================================
+ dnl Disable printing
+ dnl ========================================================
+ MOZ_ARG_DISABLE_BOOL(printing,
+ [  --disable-printing      Disable printing support],
+     NS_PRINTING=,
+     NS_PRINTING=1)
+ 
+ if test "$NS_PRINTING"; then
