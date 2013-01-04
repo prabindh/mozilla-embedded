@@ -1,0 +1,67 @@
+#using gonk, cairo-linuxgl segfaults. But gonk is only for Android now
+#so back to linuxgl
+
+export PKG_CONFIG=/home/prabindh/work1/arm-mozilla/src/x86-cross-ubuntu-pkg-config
+export CROSS_COMPILE=1
+export CC=arm-linux-gnueabi-gcc
+export CXX=arm-linux-gnueabi-g++
+export STRIP=arm-linux-gnueabi-strip
+
+export GLESDIR="/home/prabindh/work1/ubuntu-rootfs-dec/media/rootfs/usr"
+export CPPFLAGS="-I$GLESDIR/include -I$GLESDIR/include/sgx/OGLES2"
+
+export HOST_CC=gcc
+export HOST_CFLAGS="-g `pkg-config --cflags glib-2.0` -L/usr/lib/i386-linux-gnu"
+export HOST_CXX=g++
+export HOST_CXXFLAGS=-g
+export CFLAGS=-g
+export CXXFLAGS=-g
+export FFLAGS="-g -O2"
+FIX_LINK_LDFLAGS="$FIX_LINK_LDFLAGS -L$GLESDIR/lib -Wl,-rpath-link=$GLESDIR/lib"
+export LDFLAGS="$FIX_LINK_LDFLAGS"
+LDFLAGS="$FIX_LINK_LDFLAGS"
+export WRAP_LDFLAGS="$FIX_LINK_LDFLAGS"
+
+ac_add_options --target=arm-linux-gnueabi
+ac_add_options --prefix=/home/prabindh/work1/arm-moz-dec-binaries/
+ac_add_options --enable-application=b2g
+ac_add_options --enable-default-toolkit=cairo-linuxgl
+ac_add_options --enable-mobile-optimize
+ac_add_options --disable-necko-wifi
+
+#mk_add_options CPPFLAGS=-I/usr/include
+mk_add_options LDFLAGS="$FIX_LINK_LDFLAGS"
+
+ac_add_options --enable-cpp-rtti
+
+export MOZILLA_OFFICIAL=1
+mk_add_options PROFILE_GEN_SCRIPT=@TOPSRCDIR@/build/profile_pageloader.pl
+ac_add_options --enable-optimize=" -O3 -g -mapcs-frame "
+
+ac_add_options --enable-profiling
+mk_add_options MOZ_OBJDIR="@TOPSRCDIR@/obj-build-linaro-gonk"
+ac_add_options --with-arm-kuser
+ac_add_options --with-arch=armv7-a
+ac_add_options --with-thumb=toolchain-default
+ac_add_options --with-float-abi=toolchain-default
+ac_add_options --with-system-zlib
+ac_add_options --with-gl-provider=EGL
+ac_add_options --without-x
+
+ac_add_options --disable-pango
+ac_add_options --enable-tree-freetype
+ac_add_options --disable-webrtc
+ac_add_options --disable-dbus
+
+ac_add_options --disable-tests
+
+#ac_add_options --enable-debug
+#ac_add_options --enable-logging
+#export MOZ_DEBUG_SYMBOLS=1
+#ac_add_options --enable-debug-symbols="-gdwarf-2"
+
+#ac_add_options --enable-update-channel=nightly
+#ac_add_options --enable-update-packaging
+#ac_add_options --enable-tests
+
+#ac_add_options --disable-accessibility
